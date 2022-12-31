@@ -12,7 +12,7 @@ const HangmanWord = ({ wordToGuess, guessedLetters, reveal = false }: HangmanWor
                 {
                     display: 'flex',
                     gap: '0.25em',
-                    fontSize: '6rem',
+                    fontSize: '5rem',
                     fontWeight: 'bold',
                     textTransform: 'uppercase',
                     fontFamily: 'monospace',

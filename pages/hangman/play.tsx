@@ -1,9 +1,5 @@
 import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from '@next/font/google'
-import Game from '../components/Game'
-
-const inter = Inter({ subsets: ['latin'] })
+import Game from '../../components/Game'
 
 export default function App() {
     return (
@@ -15,8 +11,10 @@ export default function App() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <main>
-                <Game/>
+                <Game />
             </main>
         </>
     )
 }
+
+
