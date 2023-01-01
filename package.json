@@ -15,6 +15,8 @@
     "@types/react-dom": "18.0.10",
     "eslint": "8.30.0",
     "eslint-config-next": "13.1.1",
+    "joi": "^17.7.0",
+    "joi-browser": "^13.4.0",
     "jotai": "^1.12.1",
     "next": "13.1.1",
     "papercss": "^1.9.1",
