@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import LoginForm from '../components/LoginForm'
 
 
 export default function App() {
@@ -13,9 +14,9 @@ export default function App() {
             <main className='paper' style={{
                 margin: '0',
                 height: '100vh',
-                overflow: 'hidden'
+                overflow: 'hidden',
             }}>
-                <h1>leaderboard</h1>
+                <LoginForm/>
             </main>
         </>
     )

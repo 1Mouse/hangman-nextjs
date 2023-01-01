@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import RegisterForm from '../components/RegisterForm'
 
 
 export default function App() {
@@ -15,7 +16,7 @@ export default function App() {
                 height: '100vh',
                 overflow: 'hidden'
             }}>
-                <h1>leaderboard</h1>
+                <RegisterForm/>
             </main>
         </>
     )

@@ -15,7 +15,7 @@ export default function App() {
                 height: '100vh',
                 overflow: 'hidden'
             }}>
-                <h1>leaderboard</h1>
+                <h1>profile</h1>
             </main>
         </>
     )
