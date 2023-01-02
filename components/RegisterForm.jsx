@@ -1,10 +1,17 @@
 import Joi from 'joi-browser';
 import Input from './common/Input';
 import { useState } from 'react';
+import { useRouter } from 'next/router';
+import axios from 'axios';
+import Link from "next/link";
 
 const RegisterForm = () => {
     const [data, setData] = useState({ firstName: '', lastName: '', email: '', password: '' });
     const [errors, setErrors] = useState({});
+    const [success, setSuccess] = useState(false);
+
+
+    const router = useRouter();
 
     const schema = {
         firstName: Joi.string().required().label('First Name'),
@@ -41,9 +48,27 @@ const RegisterForm = () => {
         doSubmit();
     }
 
-    const doSubmit = () => {
-        // Call the server
-        console.log("submitted");
+    const doSubmit = async () => {
+        try {
+            const response = await axios.post('https://hangman-api-production.up.railway.app/signup', {
+                "firstName": data.firstName,
+                "lastName": data.lastName,
+                "email": data.email.toLowerCase(),
+                "password": data.password
+            });
+            // console.log(JSON.stringify(response?.data));
+            setData({ firstName: '', lastName: '', email: '', password: '' });
+            setSuccess(true);
+        } catch (err) {
+            if (!err?.response) {
+                alert('No Server Response');
+            } else if (err.response?.status === 400) {
+                alert('This email is already taken, choose another one');
+            } else {
+                alert('Registeration Failed');
+            }
+        }
+
     }
 
     const handleChange = ({ currentTarget: input }) => { //we can object destructure "e"
@@ -86,22 +111,58 @@ const RegisterForm = () => {
 
     return (
         <>
-            <form className='form-group'
-                style={{
-                    display: "flex",
-                    maxWidth: "500px",
-                    margin: "0 auto",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "center"
-                }}
-                onSubmit={handleSubmit}>
-                {renderInput('firstName', 'First Name')}
-                {renderInput('lastName', 'Last Name')}
-                {renderInput('email', 'Email', 'email')}
-                {renderInput('password', 'Password', 'password')}
-                {renderButton("Register")}
-            </form>
+            {success ? (
+                <section>
+                    <div
+                        style={{
+                            display: "flex",
+                            maxWidth: "500px",
+                            margin: "0 auto",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            marginTop: "7rem"
+                        }}
+                    >
+                        <h3>Registeration done</h3>
+                        <p>
+                            <button
+                                type="submit"
+                                className="btn btn-success-outline"
+                                onClick={() => router.push('/login')}
+                            >
+                                Login
+                            </button>
+                        </p>
+                    </div>
+                </section>
+            ) : (
+                <>
+                    <form className='form-group'
+                        style={{
+                            display: "flex",
+                            maxWidth: "500px",
+                            margin: "0 auto",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            alignItems: "center"
+                        }}
+                        onSubmit={handleSubmit}>
+                        {renderInput('firstName', 'First Name')}
+                        {renderInput('lastName', 'Last Name')}
+                        {renderInput('email', 'Email', 'email')}
+                        {renderInput('password', 'Password', 'password')}
+                        {renderButton("Register")}
+                    </form>
+                    <p style={{ textAlign: "center" }}>
+                        Already registered?{" "}
+                        <span >
+                            <Link href="./login" style={{ color: "cyan" }}>Login</Link>
+                        </span>
+                    </p>
+                </>
+            )
+            }
         </>
     );
 }

@@ -1,5 +1,6 @@
 import Head from 'next/head'
-
+import Navbar from '../components/Navbar'
+import Profile from '../components/Profile'
 
 export default function App() {
     return (
@@ -15,7 +16,8 @@ export default function App() {
                 height: '100vh',
                 overflow: 'hidden'
             }}>
-                <h1>profile</h1>
+                <Navbar />
+                <Profile/>
             </main>
         </>
     )

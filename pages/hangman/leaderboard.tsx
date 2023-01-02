@@ -1,5 +1,6 @@
 import Head from 'next/head'
-
+import Navbar from '../../components/Navbar'
+import Leaderboard from '../../components/Leaderboard'
 
 export default function App() {
     return (
@@ -10,13 +11,13 @@ export default function App() {
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            <main className='paper' style={{
-                margin: '0',
-                height: '100vh',
-                overflow: 'hidden'
+            <main className='paper container' style={{
+                maxWidth:'100vw'
             }}>
-                <h1>leaderboard</h1>
+                <Navbar />
+                <Leaderboard />
             </main>
+
         </>
     )
 }
