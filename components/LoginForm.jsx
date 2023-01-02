@@ -1,10 +1,20 @@
 import Joi from 'joi-browser';
 import Input from './common/Input';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+import axios from 'axios'
+import { useRouter } from 'next/router';
+import AuthContext from "../context/AuthProvider";
+import Link from "next/link";
 
-const LoginForm=()=> {
+
+const LoginForm = () => {
+    const { setAuth } = useContext(AuthContext);
+
     const [data, setData] = useState({ email: '', password: '' });
-    const [errors, setErrors] = useState({ });
+    const [errors, setErrors] = useState({});
+    const [success, setSuccess] = useState(false);
+
+    const router = useRouter();
 
     const schema = {
         email: Joi.string().email().required().label('Email'),
@@ -33,15 +43,38 @@ const LoginForm=()=> {
     const handleSubmit = e => {
         e.preventDefault();
         const errors = validate();
-        setErrors( errors || {} );// {} to avoid making a state equal to null
+        setErrors(errors || {});// {} to avoid making a state equal to null
         if (errors) return;
 
         doSubmit();
     }
 
-    const doSubmit = () => {
-        // Call the server
-        console.log("submitted");
+    const doSubmit = async () => {
+        try {
+            const response = await axios.post('https://hangman-api-production.up.railway.app/login', {
+                "email": data.email.toLowerCase(),
+                "password": data.password
+            });
+            // console.log(JSON.stringify(response?.data));
+            const accessToken = response?.data?.token;
+            const highestScore = response?.data?.user.highestScore;
+            const firstName = response?.data?.user.firstName;
+            const lastName = response?.data?.user.lastName;
+
+
+            const { email, password } = data
+            setAuth({ email, password, accessToken, highestScore,firstName,lastName });
+            setData({ email: '', password: '' });
+            setSuccess(true);
+        } catch (err) {
+            if (!err?.response) {
+                alert('No Server Response');
+            } else if (err.response?.status === 400) {
+                alert('wrong email or Password');
+            } else {
+                alert('Login Failed');
+            }
+        }
     }
 
     const handleChange = ({ currentTarget: input }) => { //we can object destructure "e"
@@ -58,7 +91,7 @@ const LoginForm=()=> {
         setErrors(currentErrors);
     }
 
-    const renderInput=(name, label, type = 'text')=> {
+    const renderInput = (name, label, type = 'text') => {
         return (
             <Input
                 type={type}
@@ -71,7 +104,7 @@ const LoginForm=()=> {
         );
     }
 
-    const renderButton=(label) =>{
+    const renderButton = (label) => {
         return (
             <button
                 disabled={validate()}
@@ -84,21 +117,58 @@ const LoginForm=()=> {
 
     return (
         <>
-            <form className='form-group'
-                style={{
-                    display: "flex",
-                    maxWidth: "500px",
-                    margin: "0 auto",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    marginTop:"7rem"
-                }}
-                onSubmit={handleSubmit}>
-                {renderInput('email', 'Email', 'email')}
-                {renderInput('password', 'Password', 'password')}
-                {renderButton("Login")}
-            </form>
+            {success ? (
+                <section>
+                    <div
+                        style={{
+                            display: "flex",
+                            maxWidth: "500px",
+                            margin: "0 auto",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            marginTop: "7rem"
+                        }}
+                    >
+                        <h3>You are logged in!</h3>
+                        <p>
+                            <button
+                                type="submit"
+                                className="btn btn-success-outline"
+                                onClick={() => router.push('/')}
+                            >
+                                Go to Home
+                            </button>
+                        </p>
+                    </div>
+                </section>
+            ) : (
+                <>
+                    <form className='form-group'
+                        style={{
+                            display: "flex",
+                            maxWidth: "500px",
+                            margin: "0 auto",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            marginTop: "7rem"
+                        }}
+                        onSubmit={handleSubmit}
+                    >
+                        {renderInput('email', 'Email', 'email')}
+                        {renderInput('password', 'Password', 'password')}
+                        {renderButton("Login")}
+                    </form>
+                    <p style={{ textAlign: "center" }}>
+                        Not a member?{" "}
+                        <span >
+                            <Link href="./register" style={{ color: "cyan" }}>register</Link>
+                        </span>
+                    </p>
+                </>
+            )
+            }
         </>
     );
 }

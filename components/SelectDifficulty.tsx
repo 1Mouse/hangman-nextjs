@@ -14,7 +14,7 @@ const SelectDifficulty = () => {
                     onClick={
                         () => {
                             setDifficulty('easy');
-                            // localStorage.setItem('difficulty','easy');
+                            localStorage.setItem('difficulty','easy');
                             router.push('hangman/play')
                         }
                     }
@@ -25,7 +25,7 @@ const SelectDifficulty = () => {
                     onClick={
                         () => {
                             setDifficulty('medium');
-                            // localStorage.setItem('difficulty', 'medium');
+                            localStorage.setItem('difficulty', 'medium');
                             router.push('hangman/play')
                         }
                     }
@@ -36,7 +36,7 @@ const SelectDifficulty = () => {
                     onClick={
                         () => {
                             setDifficulty('hard');
-                            // localStorage.setItem('difficulty', 'hard');
+                            localStorage.setItem('difficulty', 'hard');
                             router.push('hangman/play')
                         }
                     }

@@ -2,13 +2,16 @@ import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import "papercss/dist/paper.min.css"
 
-import { Provider } from 'jotai'
+import { Provider as JotaiProvider } from 'jotai'
+import { AuthProvider } from '../context/AuthProvider';
 
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-      <Provider>
+    <AuthProvider>
+      <JotaiProvider>
         <Component {...pageProps} />
-      </Provider>
+      </JotaiProvider>
+    </AuthProvider>
   )
 }

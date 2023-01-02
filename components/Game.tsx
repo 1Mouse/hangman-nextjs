@@ -1,9 +1,11 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useContext } from "react";
 import HangmanDrawing from "./HangmanDrawing";
 import HangmanWord from "./HangmanWord";
 import Keyboard from "./Keyboard";
 import Timer from "./Timer"
 import getWord from "../lib/getWord";
+import axios from "axios"
+import AuthContext from "../context/AuthProvider";
 
 import { difficultyAtom } from "../lib/atoms";
 import { useAtomValue } from "jotai";
@@ -11,6 +13,10 @@ import classifiedWords from "../public/classifiedWords.json"
 import { useRouter } from 'next/router';
 
 export default function Game() {
+    // @ts-ignore
+    const { auth, setAuth } = useContext(AuthContext);
+
+
     const router = useRouter();
     const [wordToGuess, setWordToGuess] = useState<string>('test');
 
@@ -22,17 +28,17 @@ export default function Game() {
 
     const difficulty: string = useAtomValue(difficultyAtom);
 
-    useEffect(() => { }, []);
-
     useEffect(() => {
-        setWordToGuess(() => getWord(difficulty, classifiedWords));
-    }, [difficulty]);
+        setWordToGuess(() => getWord(localStorage.getItem("difficulty") || difficulty, classifiedWords));
+    }, []);
 
     function addGuessedLetter(letter: string) {
         if (guessedLetters.includes(letter) || isLoser || isWinner) return;
         setGuessedLetters(currentLetters => [...currentLetters, letter])
     }
 
+    console.log(wordToGuess);
+    
     useEffect(() => {
         console.log(guessedLetters);
 
@@ -62,6 +68,33 @@ export default function Game() {
         setGameEnded(true);
     }
 
+    const updateHighScore = async () => {
+        try {
+            const response = await axios.put('https://hangman-api-production.up.railway.app/users', {
+                "highestScore": score,
+            },
+                {
+                    headers: {
+                        Authorization: `Bearer ${auth.accessToken}`,
+                    }
+                }
+            );
+            // console.log(JSON.stringify(response?.data));
+            setAuth({ ...auth, highestScore: response?.data?.highestScore });
+            // console.log(auth);
+        } catch (err: any) {
+            console.log(err);
+            if (!err?.response) {
+                console.log("no server response");
+            } else if (err.response?.status === 401) {
+                console.log('invalid token');
+            }
+            else {
+                console.log(err);
+            }
+        }
+    }
+
     const repeat = () => {
         setWordToGuess(getWord(difficulty, classifiedWords));
         setGuessedLetters([]);
@@ -72,17 +105,21 @@ export default function Game() {
         repeat();
     }
 
-    if (gameEnded||isLoser) {
+    if (gameEnded || isLoser) {
         // send score here
+        if (auth.accessToken&&score > auth.highestScore) {
+            updateHighScore();
+        }
+
         return (
             <>
                 <div className='paper row flex-center' style={{
                     margin: '0',
                     height: '100vh',
                     overflow: 'hidden',
-                    paddingBottom:'150px'
+                    paddingBottom: '150px'
                 }}>
-                    <p className="col-12 col" style={{textAlign:"center", fontSize:"4rem", marginBottom:"0px"}}>Your score is:{" "}{score}</p>
+                    <p className="col-12 col" style={{ textAlign: "center", fontSize: "4rem", marginBottom: "0px" }}>Your score is:{" "}{score}</p>
                     <button className="btn-success-outline col-6 col" style={{ marginRight: '20px', fontSize: "2rem" }}
                         onClick={
                             () => {
@@ -117,7 +154,7 @@ export default function Game() {
                     alignItems: "center",
                     height: '100vh',
                     overflow: 'hidden',
-                    paddingBottom:"15px"
+                    paddingBottom: "15px"
                 }}
             >
                 <Timer reset={handleEnd} />
