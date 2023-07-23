@@ -4,7 +4,7 @@ a website for classic games where players log in and play and compete against ot
 
 ## 📺 Demo video   
 <a href="https://www.youtube.com/watch?v=FIMkfiyWYCY" target="_blank" rel="noopener">
- <img src="https://github.com/1Mouse/hangman-nextjs/assets/49732309/0590dead-0c87-414b-929d-46c023c42998" alt="Watch the video"/>
+ Watch on Youtube
 </a>
 
 <br/>
